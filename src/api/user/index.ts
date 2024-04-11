@@ -8,8 +8,8 @@ import type {
 //项目用户相关的请求地址
 enum API {
   LOGIN_URL = '/system/user/login',
-  USERINFO_URL = '/admin/acl/index/info',
-  LOGOUT_URL = '/admin/acl/index/logout',
+  USERINFO_URL = '/system/user/info',
+  LOGOUT_URL = '/system/user/logout',
 }
 
 //登录接口

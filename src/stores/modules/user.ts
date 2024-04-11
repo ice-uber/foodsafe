@@ -9,26 +9,28 @@ export const useUserStore = defineStore('user', {
       token: localStorage.getItem('token'),
       username: '',
       avatar: '',
+      role: ''
     }
   },
   actions: {
     async login(data: loginFormData) {
       const res: loginResponseData = await reqLogin(data)
-      if (res.code === 0) {
+      if (res.code === 200) {
         this.token = res.data
         localStorage.setItem('token', res.data)
         return 'ok'
       } else {
-        return Promise.reject(new Error(res.data))
+        return Promise.reject(new Error(res.message))
       }
     },
     async userInfo() {
       const res = await reqUserInfo()
       if (res.code === 200) {
-        const { name, avatar } = res.data
-        this.username = name
+        const { userName, avatar, role } = res.data
+        this.username = userName
         this.avatar = avatar
-        return 'ok'
+        this.role = role
+        return this.role;
       } else {
         console.log(res)
         return Promise.reject(new Error(res.message))

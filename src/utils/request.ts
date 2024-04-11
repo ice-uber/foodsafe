@@ -26,7 +26,6 @@ request.interceptors.response.use(
   (response) => {
     //成功回调
     //简化数据
-    console.log('请求成功响应');
 
     return response.data
   },
@@ -69,5 +68,7 @@ request.interceptors.response.use(
     return Promise.reject(error)
   },
 )
+
+
 //对外暴露
 export default request

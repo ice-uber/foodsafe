@@ -1,5 +1,5 @@
 <template>
-  <p>这是首页</p>
+  <p>监测中心</p>
 </template>
 
 <script lang="ts">

@@ -13,9 +13,8 @@
             <el-input type="userPassword" :prefix-icon="Lock" show-userPassword v-model.trim="loginForm.userPassword"
               placeholder="请输入密码"></el-input>
           </el-form-item>
-          <el-form-item>
-            <el-button type="primary" size="default" class="login_btn" @click="login" :loading="isLoding">
-              登录
+          <el-form-item class="login-btn">
+            <el-button type="primary" size="default" class="login_btn" @click="login" :loading="isLoding">登录
             </el-button>
           </el-form-item>
         </el-form>
@@ -32,12 +31,18 @@ import { reqLogin } from '@/api/user'
 import { ElNotification } from 'element-plus'
 import { useUserStore } from "@/stores/modules/user.ts";
 import { getTime } from '@/utils/time'
-import router from '@/router'
+import { useRouter, useRoute } from "vue-router";
+
+const router = useRouter()
+const route = useRoute()
+
 
 const loginForms = ref()
 let isLoding = ref(false)
-const loginForm = reactive({ userName: 'admin', userPassword: 'atguigu123' })
+const loginForm = reactive({ userName: 'admin', userPassword: '123456' })
 const UserStore = useUserStore();
+
+// 登录表单规则
 let loginFormRule = {
   userName: [
     {
@@ -58,7 +63,7 @@ let loginFormRule = {
     },
   ],
 }
-
+// 登录方法
 async function login() {
 
   // 任意表单不符合规范则不触发
@@ -67,8 +72,8 @@ async function login() {
   isLoding.value = true
   try {
     await UserStore.login(loginForm)
-    // const redirect = route.query.redirect
-    router.push('/index')
+    const redirect = route.query.redirect
+    router.push(redirect || '/')
     ElNotification({
       type: 'success',
       message: '登录成功！',
@@ -88,7 +93,10 @@ async function login() {
 
 <style scoped>
 /* @import '../assets/css/Login.css' */
-
+.login-btn {
+  display: flex;
+  justify-content: center;
+}
 
 .container {
 
