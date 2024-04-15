@@ -22,8 +22,6 @@
       </el-table-column>
       <el-table-column label="操作" width="200">
         <template #default="scope">
-          <el-button size="small" @click="handleUp(scope.row)" v-if="scope.row.status == 0" type="success">上架</el-button>
-          <el-button size="small" @click="handleDown(scope.row)" v-else type="warning">下架</el-button>
           <el-button size="small" type="danger" @click="handleEdit(scope.row)">修改</el-button>
           <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
         </template>

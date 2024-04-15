@@ -1,85 +1,72 @@
 <template>
-  <div class="container">
-    <div style="background-color: white; display: flex;">
-      <el-input v-model="parm.key" style="width: 240px" placeholder="单位名称" />
-      <el-select v-model="parm.status" placeholder="状态" size="large" style="width: 100px; margin: 0 20px;">
-        <el-option :value="1" label="上架中" />
-        <el-option :value="0" label="已下架" />
-      </el-select>
-      <div style="margin: 0 20px;">
-        <el-button>搜索</el-button>
-        <el-button @click="searchAll">检索全部</el-button>
-        <el-button type="success" @click="addGoods">新增</el-button>
-      </div>
-    </div>
-    <el-table @selection-change="onSelected" :stripe="true" :highlight-current-row="true" max-height="400px"
-      ref="tableRef" :data="goosArr" style="width: 100%">
+  <div>
+    <el-table border table-layout="auto" @selection-change="orderStore.onSelected" :stripe="true"
+      :highlight-current-row="true" max-height="400px" ref="tableRef" :data="orderStore.orderArr" style="width: 100%">
       <el-table-column type="selection" width="55" />
       <el-table-column type="index" label="序号" width="60" />
-      <el-table-column property="categoryName" label="单位名称" width="120" />
-      <el-table-column property="goodsname" label="单位地址" show-overflow-tooltip />
-      <el-table-column property="goodsunit" label="联系人" show-overflow-tooltip />
-      <el-table-column property="price" label="联系电话" show-overflow-tooltip />
-      <el-table-column property="minamount" label="合作期限" show-overflow-tooltip />
-      <el-table-column property="status" label="合作状态" show-overflow-tooltip>
-        <template #default="scope">
-          <el-tag size="small" @click="handleEdit(scope.row)" v-if="scope.row.status == 0" type="warning">下架中</el-tag>
-          <el-tag size="small" @click="handleEdit(scope.row)" v-else type="success">上架中</el-tag>
+      <el-table-column type="expand">
+        <template #default="props">
+          <div style="margin-left: 150px;">
+            <el-table :data="props.row.children">
+              <el-table-column label="商品序号" width="80" type="index" />
+              <el-table-column label="商品名称" prop="goodsName" />
+              <el-table-column label="单价" prop="price" />
+              <el-table-column label="下单量" prop="amount" />
+              <el-table-column label="来源填报">
+                <template #default="scope">
+                  <el-tag size="small" v-if="scope.row.supplierid" type="success">已填报</el-tag>
+                  <el-tag size="small" v-else type="warning">未填报</el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="检测结果" prop="">
+                <template #default="scope">
+
+                  <el-tag size="small" type="danger">未检测</el-tag>
+                </template>
+              </el-table-column>
+
+            </el-table>
+          </div>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200">
+      <el-table-column property="orderno" label="订单编号" width="180" show-overflow-tooltip />
+      <el-table-column property="money" label="订单金额" width="" show-overflow-tooltip />
+      <el-table-column property="purchaserName" label="采购商" width="" show-overflow-tooltip />
+      <el-table-column property="address" label="收货地址" width="" show-overflow-tooltip />
+      <el-table-column property="addtime" label="下单时间" width="" show-overflow-tooltip />
+      <el-table-column property="distributiondate" label="配送时间" width="" show-overflow-tooltip />
+
+      <el-table-column property="status" label="订单状态" width="" show-overflow-tooltip>
         <template #default="scope">
-          <el-button size="small" @click="handleUp(scope.row)" v-if="scope.row.status == 0" type="success">上架</el-button>
-          <el-button size="small" @click="handleDown(scope.row)" v-else type="warning">下架</el-button>
-          <el-button size="small" type="danger" @click="handleEdit(scope.row)">修改</el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          <el-tag size="small" v-if="scope.row.status == 0" @click="orderStore.params.status = '0'"
+            type="warning">待受理</el-tag>
+          <el-tag size="small" v-if="scope.row.status == 1" @click="orderStore.params.status = '1'"
+            type="warning">待发货</el-tag>
+          <el-tag size="small" v-if="scope.row.status == 2" @click="orderStore.params.status = '2'"
+            type="success">已发货</el-tag>
+          <el-tag size="small" v-if="scope.row.status == 3" @click="orderStore.params.status = '3'"
+            type="success">已签收</el-tag>
+          <el-tag size="small" v-if="scope.row.status == 4" @click="orderStore.params.status = '4'"
+            type="success">已完成</el-tag>
         </template>
       </el-table-column>
     </el-table>
-
-    <el-pagination background layout="total, prev, pager, next,sizes , jumper , " :default-current-page="1"
-      :default-page-size="5" :total="paginationObj.totalCount" v-model:current-page="parm.page"
-      v-model:page-size="parm.limit" :page-sizes="[5, 10, 20, 30]"
-      style="background-color: white;margin-top: 10px; display: flex; justify-content: center;" />
-
-    <el-dialog v-model="dialogFormVisible" :title="form.goodsid ? '修改商品' : '新增商品'" width="500">
-      <el-form :model="form" label-width="100">
-        <el-form-item label="商品名称" required>
-          <el-input v-model="form.goodsname" autocomplete="off" />
-        </el-form-item>
-        <el-form-item label="计量单位" required>
-          <el-input v-model="form.goodsunit" autocomplete="off" />
-        </el-form-item>
-        <el-form-item label="单价" required>
-          <el-input v-model="form.price" autocomplete="off" />
-        </el-form-item>
-        <el-form-item label="起订量" required>
-          <el-input v-model="form.minamount" autocomplete="off" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">取消</el-button>
-          <el-button type="primary" @click="saveOrUpdateProduct">
-            确定
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { defineComponent, onBeforeMount, ref, reactive, watch } from "vue";
-import { reqGoodsList, reqGoodsDetail, reqGoodsUpdate, reqGoodsDown, reqGoodsUp, reqGoodsDownList, reqGoodsUpList, reqGoodsSave } from '@/api/distributor/product/index.ts'
+import { reqOrderList } from '@/api/distributor/order/index.ts'
 import { ElMessage } from 'element-plus'
-// 表格元对象
-let goosArr = ref([])
+import { useOrderStore } from '@/stores/modules/order.ts'
+
+// 订单条件存储库
+const orderStore = useOrderStore()
 
 const tableRef = ref()
 const disabledButton = ref(true)
 
-console.log(tableRef);
+
 
 
 
@@ -93,6 +80,8 @@ const form = ref({
   goodsid: ''
 })
 
+
+
 // 表单初始化
 const initForm = () => {
   form.value.goodsname = ''
@@ -102,9 +91,8 @@ const initForm = () => {
   form.value.goodsid = ''
 }
 
-const onSelected = () => {
-  console.log(111);
 
+const onSelected = () => {
   const selecetedRow = tableRef.value.getSelectionRows()
   selecetedRow.length ? disabledButton.value = false : disabledButton.value = true
 }
@@ -118,17 +106,14 @@ const parm = ref({
 })
 
 
-watch(parm.value, (newValue, oldValue) => {
 
-  getGoods(parm)
-})
 
 const paginationObj = ref({
   totalCount: 0,
 })
 
 onBeforeMount(async () => {
-  getGoods(parm)
+  searchAll()
 })
 
 
@@ -271,22 +256,12 @@ const searchAll = () => {
   parm.value.limit = 5;
   parm.value.status = '';
   parm.value.key = '';
-  getGoods(parm)
 }
 
-// 获取商品列表
-const getGoods = async (parm) => {
-  const res = await reqGoodsList(parm.value)
-  console.log(res);
-  goosArr.value = res.page.list
-  paginationObj.value.totalCount = res.page.totalCount
-}
+
+
+
 
 </script>
 
-<style scoped>
-.container {
-  width: 100%;
-  background-color: white;
-}
-</style>
+<style lang="scss" scoped></style>

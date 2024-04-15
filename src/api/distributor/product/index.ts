@@ -11,6 +11,7 @@ enum API {
   GOODS_DOWN_LIST_URL = '/foodsafe/goods/down/list',
   GOODS_UP_LIST_URL = '/foodsafe/goods/up/list',
   GOODS_SAVA_URL = '/foodsafe/goods/save',
+  GOODS_DELETE_URL = '/foodsafe/goods/delete',
 }
 
 // 获取商品列表
@@ -39,3 +40,6 @@ export const reqGoodsDownList = (data) => request.post(API.GOODS_DOWN_LIST_URL, 
 
 // 商品批量上架请求
 export const reqGoodsUpList = (data) => request.post(API.GOODS_UP_LIST_URL, data)
+
+// 商品删除清求
+export const reqGoodDelete = (data) => request.post(API.GOODS_DELETE_URL, data)

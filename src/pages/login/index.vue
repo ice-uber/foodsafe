@@ -1,21 +1,29 @@
 <template>
   <div class="container">
-
+    <!-- <div class="title">
+      <img style="width: 200px;" src="../../assets/imgaes/logo.png" alt="">
+      <p>学膳通</p>
+    </div> -->
     <div class="login-box">
-      <img src="@/assets/imgaes/login-2.jpg" alt="蔬菜" class="vagImg">
-      <div class="login-inner-box">
 
+      <div class="login-inner-box">
+        <p class="title">欢迎！</p>
+        <p style="font-size: 16px;">校园食品一站式管理平台</p>
         <el-form ref="loginForms" class="login_form_content" :model="loginForm" :rules="loginFormRule">
           <el-form-item prop="userName">
-            <el-input :prefix-icon="User" v-model.trim="loginForm.userName" placeholder="请输入账号"></el-input>
+            <el-input class="input" :prefix-icon="User" v-model.trim="loginForm.userName" placeholder="请输入账号"></el-input>
           </el-form-item>
           <el-form-item prop="userPassword">
-            <el-input type="userPassword" :prefix-icon="Lock" show-userPassword v-model.trim="loginForm.userPassword"
-              placeholder="请输入密码"></el-input>
+            <el-input class="input" type="userPassword" :prefix-icon="Lock" show-userPassword
+              v-model.trim="loginForm.userPassword" placeholder="请输入密码"></el-input>
           </el-form-item>
           <el-form-item class="login-btn">
-            <el-button type="primary" size="default" class="login_btn" @click="login" :loading="isLoding">登录
+            <el-button type="primary" size="default" class="login_btn" @click="login" :loading="isLoding"
+              style="width: 100%;height: 40px; background-color: rgb(17, 151, 68);">登录
             </el-button>
+          </el-form-item>
+          <el-form-item>
+            <p style="margin-left: 150px;">忘记密码？<a style="color:rgb(17, 151, 68)">在这里重置</a></p>
           </el-form-item>
         </el-form>
       </div>
@@ -74,11 +82,6 @@ async function login() {
     await UserStore.login(loginForm)
     const redirect = route.query.redirect
     router.push(redirect || '/')
-    ElNotification({
-      type: 'success',
-      message: '登录成功！',
-      title: `Hi,${getTime()}好`,
-    })
   } catch (e) {
     ElNotification({
       type: 'error',
@@ -92,6 +95,14 @@ async function login() {
 </script>
 
 <style scoped>
+.input {
+  background-color: rgb(245, 245, 245);
+}
+
+p {
+  margin: 0;
+}
+
 /* @import '../assets/css/Login.css' */
 .login-btn {
   display: flex;
@@ -99,60 +110,48 @@ async function login() {
 }
 
 .container {
-
-  background-color: rgb(51, 51, 51);
-  background-size: contain;
+  background-color: rgb(245, 245, 245);
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  backdrop-filter: blur(5px);
-
+  flex-direction: column;
+  align-items: center;
 
 }
 
-.container::after {
-  /* 为元素必须写一个 content，里面放个空格也行 */
-  content: " ";
-  display: block;
-
-  /* 这里借助绝对定位，拉扯这个元素，实现变相设置元素大小 */
-  position: absolute;
-  left: 0%;
-  top: 0%;
-  right: 0%;
-  bottom: 0%;
-  background: inherit;
-  /* 设置模糊，不用 filter */
-  /* backdrop-filter: blur(5px); */
-  filter: blur(5px);
-  /* background-color: rgba(128, 255, 0, 0.404); */
-
-  /* 需要设置 ::after 的叠放层级，否则它将在 local-blur 的下方 */
-  z-index: 1;
-
-  border: 1px solid black;
-  box-shadow: 0px 0px 3px darkgray;
+.title {
+  margin-top: 100px;
+  color: rgb(17, 151, 68);
+  font-size: 30px;
+  font-weight: bolder;
+  margin-bottom: 10px;
 }
 
 .login-box {
-  width: 1000px;
-  height: 500px;
+  width: 600px;
+  height: 400px;
   background-color: rgba(255, 255, 255, 1);
   border-radius: 10px;
   display: flex;
   overflow: hidden;
   filter: none;
   z-index: 2;
+  justify-content: center;
+
 }
 
+
 .login-inner-box {
-  width: 40%;
+  width: 80%;
   height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding-bottom: 150px;
 }
 
 .vagImg {
@@ -160,19 +159,28 @@ async function login() {
   height: 100%;
 }
 
+.login_form_content {
+  margin-top: 30px;
+  width: 100%;
+}
+
 .login-form {
-  width: 60%;
+
+  width: 80%;
   height: 70%;
 
 }
 
-/* >>>.el-input__inner {
-  border: 0px;
-  border-bottom: 1px solid rgb(183, 181, 181);
-  margin: 20px 0;
-  font-size: 16px;
-  padding-left: 30px;
-  height: 30px;
+>>>.el-input__inner {
+
+  border-bottom: 1px solid rgb(245, 245, 245);
+  background-color: rgb(245, 245, 245);
+  padding: 20px 0px;
+}
+
+
+>>>.el-input__wrapper {
+  background-color: rgb(245, 245, 245);
 }
 
 .userName>>>.el-input__inner {
@@ -181,13 +189,15 @@ async function login() {
   background-repeat: no-repeat;
   background-position-y: 1px;
   background-position-x: 3px;
+  background-color: rgb(245, 245, 245);
 }
 
 .userPassword>>>.el-input__inner {
+  background-color: rgb(245, 245, 245);
   background-image: url("@/assets/icon/userPassword.png");
   background-size: 20px;
   background-repeat: no-repeat;
   background-position-y: 1px;
   background-position-x: 3px;
-} */
+}
 </style>

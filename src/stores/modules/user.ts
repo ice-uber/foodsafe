@@ -9,7 +9,10 @@ export const useUserStore = defineStore('user', {
       token: localStorage.getItem('token'),
       username: '',
       avatar: '',
-      role: ''
+      role: '',
+      companyName: '',
+      distributionId: '',
+      distributionCompanyName: '',
     }
   },
   actions: {
@@ -26,10 +29,13 @@ export const useUserStore = defineStore('user', {
     async userInfo() {
       const res = await reqUserInfo()
       if (res.code === 200) {
-        const { userName, avatar, role } = res.data
+        const { userName, avatar, role, companyName, distributionId, distributionCompanyName } = res.data
         this.username = userName
         this.avatar = avatar
         this.role = role
+        this.companyName = companyName
+        this.distributionId = distributionId
+        this.distributionCompanyName = distributionCompanyName
         return this.role;
       } else {
         console.log(res)
@@ -41,6 +47,7 @@ export const useUserStore = defineStore('user', {
       if (res.code === 200) {
         this.username = ''
         this.avatar = ''
+        this.role = ''
         this.token = ''
         localStorage.removeItem('token')
         return 'ok'

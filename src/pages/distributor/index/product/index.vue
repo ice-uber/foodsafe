@@ -1,10 +1,10 @@
 <template>
   <div class="container">
     <div style="background-color: white; display: flex;">
-      <el-tree-select v-model="value" :data="data" :render-after-expand="false"
-        style="width: 100px; margin-right: 20px;" />
+      <!-- <el-tree-select v-model="value" :data="data" :render-after-expand="false"
+        style="width: 100px; margin-right: 20px;" /> -->
       <el-input v-model="parm.key" style="width: 240px" placeholder="检索商品名称" />
-      <el-select v-model="parm.status" placeholder="Select" size="large" style="width: 100px; margin: 0 20px;">
+      <el-select v-model="parm.status" placeholder="状态" size="large" style="width: 100px; margin: 0 20px;">
         <el-option :value="1" label="上架中" />
         <el-option :value="0" label="已下架" />
       </el-select>
@@ -22,8 +22,8 @@
       <el-table-column type="index" label="序号" width="60" />
       <el-table-column label="商品图片" width="120">
         <template #default="scope">
-          <el-image style="width: 100px; height: 100px" :src="scope.row.goodsimg" fit="cover" />
-
+          <el-image style="width: 100px; height: 100px" :src="scope.row.goodsimg" fit="cover">
+          </el-image>
         </template>
       </el-table-column>
       <el-table-column property="categoryName" label="商品分类" width="120" />
@@ -42,7 +42,7 @@
           <el-button size="small" @click="handleUp(scope.row)" v-if="scope.row.status == 0" type="success">上架</el-button>
           <el-button size="small" @click="handleDown(scope.row)" v-else type="warning">下架</el-button>
           <el-button size="small" type="danger" @click="handleEdit(scope.row)">修改</el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          <el-button size="small" type="danger" @click="handedeletegoods(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -57,6 +57,17 @@
         <el-form-item label="商品名称" required>
           <el-input v-model="form.goodsname" autocomplete="off" />
         </el-form-item>
+        <el-form-item label="商品图片" required><el-upload class="avatar-uploader" action="/api/admin/common/upload"
+            :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+            <el-image v-if="form.goodsimg" :src="form.goodsimg" fit="cover" style="  width: 178px;
+  height: 178px;" />
+            <div v-else style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+              <el-icon class="avatar-uploader-icon">
+                <Plus />
+              </el-icon>
+              <el-tag type="success">请上传商品图片</el-tag>
+            </div>
+          </el-upload></el-form-item>
         <el-form-item label="计量单位" required>
           <el-input v-model="form.goodsunit" autocomplete="off" />
         </el-form-item>
@@ -81,8 +92,10 @@
 
 <script lang="ts" setup>
 import { defineComponent, onBeforeMount, ref, reactive, watch } from "vue";
-import { reqGoodsList, reqGoodsDetail, reqGoodsUpdate, reqGoodsDown, reqGoodsUp, reqGoodsDownList, reqGoodsUpList, reqGoodsSave } from '@/api/distributor/product/index.ts'
+import { reqGoodsList, reqGoodsDetail, reqGoodsUpdate, reqGoodsDown, reqGoodsUp, reqGoodsDownList, reqGoodsUpList, reqGoodsSave, reqGoodDelete } from '@/api/distributor/product/index.ts'
 import { ElMessage } from 'element-plus'
+import { Plus } from '@element-plus/icons-vue'
+
 // 表格元对象
 let goosArr = ref([])
 
@@ -91,8 +104,6 @@ const disabledButton = ref(true)
 
 console.log(tableRef);
 
-
-
 const dialogFormVisible = ref(false)
 
 const form = ref({
@@ -100,7 +111,8 @@ const form = ref({
   goodsunit: '',
   price: 0,
   minamount: 0,
-  goodsid: ''
+  goodsid: '',
+  goodsimg: ''
 })
 
 // 表单初始化
@@ -110,6 +122,7 @@ const initForm = () => {
   form.value.price = 0
   form.value.minamount = 0
   form.value.goodsid = ''
+  form.value.goodsimg = ''
 }
 
 const onSelected = () => {
@@ -127,6 +140,17 @@ const parm = ref({
   key: ''
 })
 
+let imageUrl = ref('')
+
+// 文件上传前
+const beforeAvatarUpload = () => { }
+
+// 文件上传成功
+const handleAvatarSuccess = (res) => {
+  imageUrl.value = res.data
+  form.value.goodsimg = res.data
+  tips("商品图片上传成功！", "商品图片上传失败", res.code)
+}
 
 watch(parm.value, (newValue, oldValue) => {
 
@@ -141,6 +165,13 @@ onBeforeMount(async () => {
   getGoods(parm)
 })
 
+// 点击删除商品
+const handedeletegoods = async (row) => {
+  const arr = [row.goodsid]
+  const res = await reqGoodDelete(arr)
+  tips(`商品【${row.goodsname}】删除成功`, `商品【${row.goodsname}】删除失败`, res.code)
+  getGoods(parm)
+}
 
 // 点击新增商品
 const addGoods = async () => {
@@ -181,6 +212,7 @@ const handleEdit = async (row) => {
   form.value.price = res.goods.price
   form.value.minamount = res.goods.minamount
   form.value.goodsid = res.goods.goodsid
+  form.value.goodsimg = res.goods.goodsimg
   dialogFormVisible.value = true
 
 }
@@ -253,6 +285,7 @@ const saveOrUpdateProduct = async () => {
         message: form.value.goodsid ? '更新失败' : '保存失败'
       })
     } finally {
+      getGoods(parm)
       initForm()
       dialogFormVisible.value = false
     }
@@ -298,5 +331,26 @@ const getGoods = async (parm) => {
 .container {
   width: 100%;
   background-color: white;
+}
+
+.avatar-uploader>>>.el-upload {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+.avatar-uploader>>>.el-upload:hover {
+  border-color: var(--el-color-primary);
+}
+
+.el-icon.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  text-align: center;
 }
 </style>

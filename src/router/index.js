@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory, createWebHashHistory } from 'vue-router'
 import Login from '../pages/login/index.vue'
-import DistributorIndex from '../pages/distributor/index/index.vue'
-import PurchaserIndex from '../pages/purchaser/index/index.vue'
+import DistributorIndex from '../pages/distributor/index.vue'
+import PurchaserIndex from '../pages/purchaser/index.vue'
 
 
 const router = createRouter({
@@ -14,6 +14,27 @@ const router = createRouter({
         title: '首页'
       },
       children: [
+        {
+          path: 'userSet',
+          component: () => import('@/pages/distributor/user/userset/index.vue'),
+          meta: {
+            title: '个人设置'
+          },
+        },
+        {
+          path: 'userInfo',
+          component: () => import('@/pages/distributor/user/userinfo/index.vue'),
+          meta: {
+            title: '用户中心'
+          },
+        },
+        {
+          path: 'index',
+          component: () => import('@/pages/distributor/index/index.vue'),
+          meta: {
+            title: '欢迎'
+          },
+        },
         {
           path: 'product',
           component: () => import('@/pages/distributor/index/product/index.vue'),
@@ -67,7 +88,46 @@ const router = createRouter({
     },
     {
       path: '/purchaser',
-      component: PurchaserIndex
+      component: PurchaserIndex,
+      meta: {
+        title: '首页'
+      },
+      children: [
+        {
+          path: 'shopping',
+          component: () => import('@/pages/purchaser/index/index.vue'),
+          meta: {
+            title: '购物'
+          },
+
+        },
+        {
+          path: 'distribution',
+          component: () => import('@/pages/purchaser/distribution/index.vue'),
+          meta: {
+            title: '我的配送商'
+          },
+        }, {
+          path: 'order',
+          component: () => import('@/pages/purchaser/order/index.vue'),
+          meta: {
+            title: '我的订单'
+          },
+        }, {
+          path: 'checkout',
+          component: () => import('@/pages/purchaser/checkOut/index.vue'),
+          meta: {
+            title: '结账'
+          },
+        }, {
+          path: 'checkoutSuccess',
+          component: () => import('@/pages/purchaser/checkOutSuccess/index.vue'),
+          meta: {
+            title: '订购成功'
+          },
+        },
+
+      ]
     },
     {
       path: '/login',

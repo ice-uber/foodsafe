@@ -1,6 +1,6 @@
 <template>
   <header class="header">
-    <p>您好{{ userStore.username }},欢迎来到校园食安平台！</p>
+    <p>您好{{ userStore.username }},欢迎来到学膳通！</p>
     <div class="userInfo">
       <el-avatar :src="userStore.avatar" />
       <el-dropdown>
@@ -12,9 +12,9 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>用户中心</el-dropdown-item>
-            <el-dropdown-item>个人设置</el-dropdown-item>
-            <el-dropdown-item>登出</el-dropdown-item>
+            <el-dropdown-item @click="router.push('/distributor/userInfo')">用户中心</el-dropdown-item>
+            <el-dropdown-item @click="router.push('/distributor/userSet')">个人设置</el-dropdown-item>
+            <el-dropdown-item @click="logout">登出</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -26,12 +26,20 @@
 import { defineComponent, ref } from "vue";
 import { useUserStore } from '@/stores/modules/user.ts'
 import { ArrowDown } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
 
 const userStore = useUserStore()
 defineComponent({
   ArrowDown
 })
 
+const router = useRouter()
+console.log(router);
+
+const logout = async () => {
+  await userStore.logout()
+  router.push('/login')
+}
 
 </script>
 
