@@ -3,8 +3,8 @@
     <div style="background-color: white; display: flex;">
       <el-input v-model="parm.key" style="width: 240px" placeholder="单位名称" />
       <el-select v-model="parm.status" placeholder="状态" size="large" style="width: 100px; margin: 0 20px;">
-        <el-option :value="1" label="上架中" />
-        <el-option :value="0" label="已下架" />
+        <el-option :value="1" label="合作中" />
+        <el-option :value="0" label="已终止" />
       </el-select>
       <div style="margin: 0 20px;">
         <el-button>搜索</el-button>
@@ -13,26 +13,33 @@
       </div>
     </div>
     <el-table @selection-change="onSelected" :stripe="true" :highlight-current-row="true" max-height="400px"
-      ref="tableRef" :data="goosArr" style="width: 100%">
+      ref="tableRef" :data="customArr" style="width: 100%">
       <el-table-column type="selection" width="55" />
       <el-table-column type="index" label="序号" width="60" />
-      <el-table-column property="categoryName" label="单位名称" width="120" />
-      <el-table-column property="goodsname" label="单位地址" show-overflow-tooltip />
-      <el-table-column property="goodsunit" label="联系人" show-overflow-tooltip />
-      <el-table-column property="price" label="联系电话" show-overflow-tooltip />
-      <el-table-column property="minamount" label="合作期限" show-overflow-tooltip />
+      <el-table-column property="companyname" label="单位名称" width="120" />
+      <el-table-column property="addr" label="单位地址" show-overflow-tooltip />
+      <el-table-column property="name" label="联系人" show-overflow-tooltip />
+      <el-table-column property="phone" label="联系电话" show-overflow-tooltip />
+      <el-table-column property="minamount" label="合作期限" show-overflow-tooltip>
+        <template #default="scope">
+          <div v-if="scope.row.islongrelation">
+            <el-tag type="success">长期</el-tag>
+          </div>
+          <div v-else>
+            {{ scope.row.begindate }} - {{ scope.row.enddate }}
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column property="status" label="合作状态" show-overflow-tooltip>
         <template #default="scope">
-          <el-tag size="small" @click="handleEdit(scope.row)" v-if="scope.row.status == 0" type="warning">下架中</el-tag>
-          <el-tag size="small" @click="handleEdit(scope.row)" v-else type="success">上架中</el-tag>
+          <el-tag size="small" @click="handleEdit(scope.row)" v-if="scope.row.status == 0" type="warning">已终止</el-tag>
+          <el-tag size="small" @click="handleEdit(scope.row)" v-else type="success">合作中</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作" width="200">
         <template #default="scope">
-          <el-button size="small" @click="handleUp(scope.row)" v-if="scope.row.status == 0" type="success">上架</el-button>
-          <el-button size="small" @click="handleDown(scope.row)" v-else type="warning">下架</el-button>
-          <el-button size="small" type="danger" @click="handleEdit(scope.row)">修改</el-button>
-          <el-button size="small" type="danger" @click="handleDelete(scope.row)">删除</el-button>
+          <el-button size="small" type="warning" @click="handleEdit(scope.row)">修改</el-button>
+          <el-button size="small" type="danger" @click="handleDelete(scope.row)">终止合作</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -72,15 +79,13 @@
 <script lang="ts" setup>
 import { defineComponent, onBeforeMount, ref, reactive, watch } from "vue";
 import { reqGoodsList, reqGoodsDetail, reqGoodsUpdate, reqGoodsDown, reqGoodsUp, reqGoodsDownList, reqGoodsUpList, reqGoodsSave } from '@/api/distributor/product/index.ts'
+import { reqPurchaserList } from '@/api/distributor/customer/index.ts'
 import { ElMessage } from 'element-plus'
 // 表格元对象
-let goosArr = ref([])
+let customArr = ref([])
 
 const tableRef = ref()
 const disabledButton = ref(true)
-
-console.log(tableRef);
-
 
 
 const dialogFormVisible = ref(false)
@@ -120,7 +125,7 @@ const parm = ref({
 
 watch(parm.value, (newValue, oldValue) => {
 
-  getGoods(parm)
+  getCustomerList(parm)
 })
 
 const paginationObj = ref({
@@ -128,7 +133,7 @@ const paginationObj = ref({
 })
 
 onBeforeMount(async () => {
-  getGoods(parm)
+  getCustomerList(parm)
 })
 
 
@@ -138,29 +143,6 @@ const addGoods = async () => {
   dialogFormVisible.value = true
 }
 
-// 点击批量下架
-const listDown = async () => {
-  const selectedRowArr = tableRef.value.getSelectionRows()
-
-  // 收集所有id
-  const ids = selectedRowArr.map(item => item.goodsid)
-
-  const res = await reqGoodsDownList(ids)
-  tips("批量下架成功", "批量下架失败", res.code)
-  getGoods(parm)
-}
-
-// 点击批量上架
-const listUp = async () => {
-  const selectedRowArr = tableRef.value.getSelectionRows()
-
-  // 收集所有id
-  const ids = selectedRowArr.map(item => item.goodsid)
-
-  const res = await reqGoodsUpList(ids)
-  tips("批量上架成功", "批量上架失败", res.code)
-  getGoods(parm)
-}
 
 // 点击修改时
 const handleEdit = async (row) => {
@@ -174,26 +156,9 @@ const handleEdit = async (row) => {
   dialogFormVisible.value = true
 
 }
+
 // 点击删除时
 const handleDelete = (row) => { }
-// 点击上架时
-const handleUp = async (row) => {
-  const res = await reqGoodsUp(row.goodsid)
-  if (res.code === 200) {
-    ElMessage({
-      type: 'success',
-      message: row.goodsname + '上架成功'
-
-    })
-    getGoods(parm)
-  } else {
-    ElMessage({
-      type: 'error',
-      message: row.goodsname + '上架失败'
-    })
-  }
-
-}
 
 // 提示函数
 const tips = (successMessage, errorMessage, code) => {
@@ -208,25 +173,6 @@ const tips = (successMessage, errorMessage, code) => {
       message: errorMessage
     })
   }
-}
-
-
-// 点击下架时
-const handleDown = async (row) => {
-  const res = await reqGoodsDown(row.goodsid)
-  if (res.code === 200) {
-    ElMessage({
-      type: 'success',
-      message: row.goodsname + '下架成功'
-    })
-    getGoods(parm)
-  } else {
-    ElMessage({
-      type: 'error',
-      message: row.goodsname + '下架失败'
-    })
-  }
-
 }
 
 // 修改或保存当前表单
@@ -249,7 +195,7 @@ const saveOrUpdateProduct = async () => {
   } else {
     try {
       const res = await reqGoodsSave(form.value)
-      getGoods(parm)
+      getCustomerList(parm)
       tips(`新增商品【${form.value.goodsname}】成功`, `新增商品【${form.value.goodsname}】失败`, res.code)
 
     } catch (error) {
@@ -271,15 +217,15 @@ const searchAll = () => {
   parm.value.limit = 5;
   parm.value.status = '';
   parm.value.key = '';
-  getGoods(parm)
+  getCustomerList(parm)
 }
 
-// 获取商品列表
-const getGoods = async (parm) => {
-  const res = await reqGoodsList(parm.value)
+// 获取客户列表
+const getCustomerList = async (parm) => {
+  const res = await reqPurchaserList(parm.value)
   console.log(res);
-  goosArr.value = res.page.list
-  paginationObj.value.totalCount = res.page.totalCount
+  customArr.value = res.data.list
+  paginationObj.value.totalCount = res.data.totalCount
 }
 
 </script>

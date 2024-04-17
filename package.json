@@ -14,9 +14,12 @@
     "animate.css": "^4.1.1",
     "axios": "^1.6.8",
     "element-plus": "^2.5.2",
+    "fast-glob": "^3.3.2",
     "nprogress": "^0.2.0",
     "pinia": "^2.1.7",
-    "sass": "^1.74.1",
+    "pubsub-js": "^1.9.4",
+    "sass": "^1.75.0",
+    "vite-plugin-svg-icons": "^2.0.1",
     "vue": "^3.3.11",
     "vue-router": "^4.3.0"
   },

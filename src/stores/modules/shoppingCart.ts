@@ -7,7 +7,7 @@ export const useShoppingCartStore = defineStore('order', {
         page: 1,
         limit: 10,
         key: '',
-        total: '',
+        total: 0,
         status: "0"
       },
       goodsList: [],

@@ -2,9 +2,9 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig, loadEnv } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 
-// import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
-import path from 'path'
+import { join, resolve } from "path"
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command, mode }) => {
@@ -13,12 +13,11 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [
       vue(),
-      // createSvgIconsPlugin({
-      //   // Specify the icon folder to be cached
-      //   iconDirs: [path.resolve(process.cwd(), 'src/assets/icons')],
-      //   // Specify symbolId format
-      //   symbolId: 'icon-[dir]-[name]',
-      // }),
+      createSvgIconsPlugin({
+        iconDirs: [resolve(process.cwd(), 'src/assets/svgs')],
+        // 这个表示id，按这个来就对了
+        symbolId: 'icon-[dir]-[name]',
+      }),
     ],
     resolve: {
       alias: {

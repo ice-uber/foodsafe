@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+
     <header class="header">
       <p>您好！{{ userStore.username }}欢迎使用学膳通</p>
       <div class="right">
@@ -25,8 +26,9 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item v-for="item in distributionList" :key="item.distributionid">{{ item.companyname
-              }}</el-dropdown-item>
+              <el-dropdown-item @click="onDistributionChange(item.distributionid)" v-for="item in distributionList"
+                :key="item.distributionid">
+                {{ item.companyname }}</el-dropdown-item>
 
             </el-dropdown-menu>
           </template>
@@ -72,6 +74,7 @@
             <el-menu-item index="/purchaser/shopping" style="  background-color: white;">首页</el-menu-item>
             <el-menu-item index="/purchaser/distribution">我的配送商</el-menu-item>
             <el-menu-item index="/purchaser/order">订单管理</el-menu-item>
+            <el-menu-item index="">食品溯源</el-menu-item>
           </div>
           <div class="devMessage">
             <div>
@@ -172,7 +175,8 @@ import { useUserStore } from '@/stores/modules/user.ts'
 import { useShoppingCartStore } from '@/stores/modules/shoppingCart.ts'
 import { reqSaveShoppingCart, reqShoppingCartList, reqRemoveShoppingCartList } from '@/api/purchaser/shoppingCart/index.ts'
 import { reqGoodsCount, reqGoodsList } from '@/api/purchaser/goods/index.ts'
-
+import { userInfo } from 'os';
+import pubsub from 'pubsub-js'
 const router = useRouter()
 const userStore = useUserStore()
 const shoppingCartStore = useShoppingCartStore()
@@ -183,10 +187,22 @@ const distributionList = ref([])
 
 const banlance = ref(0)
 
+// 当配送商发生变化时
+const onDistributionChange = async (distributionId) => {
+  const obj = {
+    distributionId
+  }
+  await userStore.userInfo(obj)
+  await getGoodsList()
+  getShoppingCart()
+  pubsub.publish('sendMessage')
+}
+
 // 监视购物车有无变化
 watch(shoppingCartStore.goodsList, () => {
   const list = shoppingCartStore.goodsList
   let count = 0;
+
   list.forEach(item => {
     count += item.number * item.price
   })
@@ -200,8 +216,8 @@ watch(shoppingCartStore.goodsList, () => {
 onBeforeMount(async () => {
 
   await getGoodsList()
-  getDistributionList()
-  getShoppingCart()
+  await getDistributionList()
+  await getShoppingCart()
   router.push("/purchaser/shopping")
 })
 
@@ -248,17 +264,15 @@ const getShoppingCart = async () => {
   if (res.code === 200) {
     const arr = res.data
     if (arr) {
+      shoppingCartStore.goodsList.length = 0
       arr.forEach(item => {
-        console.log(item, shoppingCartStore.goodsArr);
-
         const goods = shoppingCartStore.goodsArr.filter(goods => {
-
           return goods.goodsid === item.goodsid
         })
+        if (goods.length > 0) {
+          shoppingCartStore.goodsList.push(goods[0])
+        }
 
-        console.log(goods);
-
-        shoppingCartStore.goodsList.push(goods[0])
       })
     }
 
@@ -306,6 +320,7 @@ const getGoodsList = async () => {
   display: flex;
   justify-content: center;
   align-items: center;
+
 }
 
 .shopping-cart-content .item-content {
@@ -417,10 +432,12 @@ const getGoodsList = async () => {
 
 
 .container {
+
   width: 100%;
   height: 100%;
   background-color: rgb(245, 245, 245);
   /* background-color: aquamarine; */
+
 }
 
 p {

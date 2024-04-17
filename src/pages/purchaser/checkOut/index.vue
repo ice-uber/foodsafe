@@ -7,8 +7,8 @@
     <div class="order">
       <p class="detail">订单详情</p>
       <el-table :data="shoppingCartStore.goodsList" style="width: 100%" :stripe="true" class="table">
-        <el-table-column type="index" label="序号" width="180" />
-        <el-table-column label="图片" width="180">
+        <el-table-column type="index" align="center" label="序号" width="180" />
+        <el-table-column align="center" label="图片" width="180">
           <template #default="scope">
             <el-image style="width: 150px; height: 150px" :src="scope.row.goodsimg" fit="cover">
               <template #error>
@@ -19,20 +19,20 @@
             </el-image>
           </template>
         </el-table-column>
-        <el-table-column prop="goodsname" label="商品名称" width="180" />
+        <el-table-column prop="goodsname" align="center" label="商品名称" width="180" />
 
-        <el-table-column label="供应商" width="180">
+        <el-table-column align="center" label="配送商" width="180">
           <template #default="scope">
-            <el-tag type="success">{{ userStore.distributionCompanyName }}</el-tag>
+            <el-tag type="success" style="font-size: 18px;">{{ userStore.distributionCompanyName }}</el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="name" label="价格" width="180">
+        <el-table-column align="center" prop="name" label="价格" width="180">
           <template #default="scope">
             <p>￥{{ scope.row.price }} / {{ scope.row.goodsunit }}</p>
           </template>
         </el-table-column>
-        <el-table-column prop="number" label="数量" width="180" />
-        <el-table-column label="合计" width="180">
+        <el-table-column align="center" prop="number" label="数量" width="180" />
+        <el-table-column align="center" label="合计" width="180">
           <template #default="scope">
             <p style="font-size: 24px;color: rgb(17, 151, 68);">￥{{ (scope.row.price * scope.row.number).toFixed(2) }}</p>
           </template>

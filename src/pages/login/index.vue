@@ -7,7 +7,7 @@
     <div class="login-box">
 
       <div class="login-inner-box">
-        <p class="title">欢迎！</p>
+        <p class="title">欢迎使用学膳通！</p>
         <p style="font-size: 16px;">校园食品一站式管理平台</p>
         <el-form ref="loginForms" class="login_form_content" :model="loginForm" :rules="loginFormRule">
           <el-form-item prop="userName">
@@ -194,7 +194,6 @@ p {
 
 .userPassword>>>.el-input__inner {
   background-color: rgb(245, 245, 245);
-  background-image: url("@/assets/icon/userPassword.png");
   background-size: 20px;
   background-repeat: no-repeat;
   background-position-y: 1px;

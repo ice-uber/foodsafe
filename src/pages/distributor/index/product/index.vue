@@ -3,6 +3,7 @@
     <div style="background-color: white; display: flex;">
       <!-- <el-tree-select v-model="value" :data="data" :render-after-expand="false"
         style="width: 100px; margin-right: 20px;" /> -->
+      <el-tree-select v-model="parm.categoryId" :data="treeCategory" :render-after-expand="false" style="width: 240px" />
       <el-input v-model="parm.key" style="width: 240px" placeholder="检索商品名称" />
       <el-select v-model="parm.status" placeholder="状态" size="large" style="width: 100px; margin: 0 20px;">
         <el-option :value="1" label="上架中" />
@@ -57,6 +58,10 @@
         <el-form-item label="商品名称" required>
           <el-input v-model="form.goodsname" autocomplete="off" />
         </el-form-item>
+        <el-form-item label="所属分类" required>
+          <el-tree-select v-model="form.classificationid" :data="treeCategory" :render-after-expand="false"
+            style="width: 240px" />
+        </el-form-item>
         <el-form-item label="商品图片" required><el-upload class="avatar-uploader" action="/api/admin/common/upload"
             :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
             <el-image v-if="form.goodsimg" :src="form.goodsimg" fit="cover" style="  width: 178px;
@@ -93,6 +98,7 @@
 <script lang="ts" setup>
 import { defineComponent, onBeforeMount, ref, reactive, watch } from "vue";
 import { reqGoodsList, reqGoodsDetail, reqGoodsUpdate, reqGoodsDown, reqGoodsUp, reqGoodsDownList, reqGoodsUpList, reqGoodsSave, reqGoodDelete } from '@/api/distributor/product/index.ts'
+import { reqCategoryTree } from '@/api/common/index.ts'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 
@@ -102,17 +108,16 @@ let goosArr = ref([])
 const tableRef = ref()
 const disabledButton = ref(true)
 
-console.log(tableRef);
-
 const dialogFormVisible = ref(false)
 
 const form = ref({
   goodsname: '',
-  goodsunit: '',
+  goodsunit: '斤',
   price: 0,
   minamount: 0,
   goodsid: '',
-  goodsimg: ''
+  goodsimg: '',
+  classificationid: ''
 })
 
 // 表单初始化
@@ -123,6 +128,7 @@ const initForm = () => {
   form.value.minamount = 0
   form.value.goodsid = ''
   form.value.goodsimg = ''
+  form.value.classificationid = ''
 }
 
 const onSelected = () => {
@@ -163,7 +169,17 @@ const paginationObj = ref({
 
 onBeforeMount(async () => {
   getGoods(parm)
+
+  getTreeCategory()
 })
+
+const treeCategory = ref([])
+
+// 获取分类树形数据
+const getTreeCategory = async () => {
+  const res = await reqCategoryTree()
+  if (res.data) treeCategory.value = res.data
+}
 
 // 点击删除商品
 const handedeletegoods = async (row) => {

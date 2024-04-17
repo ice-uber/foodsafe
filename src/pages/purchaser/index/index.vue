@@ -9,7 +9,6 @@
           <div style="font-size: 18px; margin-top: 3px;">{{ item.count }}个商品</div>
         </div>
       </div>
-
     </div>
     <div class="content">
       <div class="title" style="font-size: 30px; font-weight: bolder;">{{ userStore.distributionCompanyName }}在售商品</div>
@@ -17,7 +16,8 @@
 
         <div class="item block" v-for="item in ShoppingCartStore.goodsArr" :key="item.goodsid">
           <el-tag type="success" style="margin-bottom: 20px;font-size:20px">销售中</el-tag>
-          <el-image :src="item.goodsimg" style="">
+          <el-image :src="item.goodsimg" style="width: 200px;height: 400px;" :hide-on-click-modal="true"
+            :preview-src-list="[item.goodsimg]">
             <template #error>
               <div class="image-slot">
                 <el-tag size="large" type="success" style="font-size:18px">商家未上传图片</el-tag>
@@ -55,9 +55,10 @@
 import { ref, defineComponent, onBeforeMount, watch } from "vue";
 import { reqDistributionList } from '@/api/purchaser/index/index.ts'
 import { reqGoodsCount, reqGoodsList } from '@/api/purchaser/goods/index.ts'
-import { reqSaveShoppingCart } from '@/api/purchaser/shoppingCart/index.ts'
+import { reqSaveShoppingCart, reqShoppingCartList } from '@/api/purchaser/shoppingCart/index.ts'
 import { useUserStore } from '@/stores/modules/user.ts'
 import { useShoppingCartStore } from '@/stores/modules/shoppingCart.ts'
+import pubsub from 'pubsub-js'
 
 const params = ref({
   page: 1,
@@ -70,6 +71,7 @@ const ShoppingCartStore = useShoppingCartStore()
 
 watch(ShoppingCartStore.params, () => {
   getGoodsList()
+  getShoppingCart()
 })
 
 const userStore = useUserStore()
@@ -82,6 +84,9 @@ const goodsList = ref({})
 
 onBeforeMount(() => {
   getOrderCount()
+  // getShoppingCart()
+
+  pubsub.subscribe('sendMessage', getOrderCount)
 })
 
 // 当商品购物车数量发生变化时
@@ -90,7 +95,6 @@ const handleChange = (item) => {
     let index = 0
     let count = 0
     ShoppingCartStore.goodsList.forEach(goods => {
-
       if (goods.goodsid === item.goodsid) {
         index = count
       }
@@ -121,6 +125,27 @@ const addCart = (item) => {
   reqSaveShoppingCart(obj)
 }
 
+// 获取当前配送商下的购物车列表
+const getShoppingCart = async () => {
+  const res = await reqShoppingCartList(userStore.distributionId);
+  if (res.code === 200) {
+    const arr = res.data
+    if (arr) {
+      arr.forEach(item => {
+        const goods = ShoppingCartStore.goodsArr.filter(goods => {
+          return goods.goodsid === item.goodsid
+        })
+        if (goods.length > 0) {
+          ShoppingCartStore.goodsList.push(goods[0])
+        }
+
+      })
+    }
+
+
+  }
+}
+
 // 获取各类订单的状态
 const getOrderCount = async () => {
   if (userStore.distributionId) {
@@ -132,12 +157,18 @@ const getOrderCount = async () => {
 // 获取所有商品列表
 const getGoodsList = async () => {
   if (userStore.distributionId) {
+
     const res = await reqGoodsList(userStore.distributionId, ShoppingCartStore.params)
     const goodsList = res.data.list
     if (goodsList) {
       ShoppingCartStore.goodsArr.length = 0
       goodsList.forEach(goods => {
-        ShoppingCartStore.goodsArr.push(goods)
+        const result = ShoppingCartStore.goodsList.filter(item => item.goodsid === goods.goodsid)
+        if (result.length > 0) {
+          ShoppingCartStore.goodsArr.push(result[[0]])
+        } else {
+          ShoppingCartStore.goodsArr.push(goods)
+        }
       })
     }
     // goodsList.value = res.data.list
@@ -151,8 +182,6 @@ const getGoodsList = async () => {
 
 
 <style scoped>
->>>.el-input-number__decrease:hover {}
-
 :deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
   background-color: rgba(17, 151, 68) !important;
 }
@@ -267,6 +296,7 @@ p {
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  min-height: 66vh;
 }
 
 

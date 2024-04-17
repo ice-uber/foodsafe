@@ -20,6 +20,7 @@ router.beforeEach(async (to, from, next) => {
     } else {
       // 没有用户信息首先获取用户信息
       //    用户信息获取失败包括 1.客户端token被修改 2.token过期
+
       if (username) {
         // 如果有检查是不是访问首页 / 如果是根据角色重定向至对应界面
         if (to.path === '/' || '') {

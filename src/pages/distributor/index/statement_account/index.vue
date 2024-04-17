@@ -76,7 +76,6 @@ const paginationObj = ref({
 onBeforeMount(async () => {
   getOrderDetail(parm)
   getTotal()
-  getPurchaserList()
 })
 
 // 标题信息对象

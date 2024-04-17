@@ -40,7 +40,6 @@
             </template>
           </el-table-column>
           <el-table-column type="selection" width="55" />
-
           <el-table-column type="index" label="序号" width="60" />
           <el-table-column property="orderno" label="订单编号" width="180" show-overflow-tooltip />
           <el-table-column property="money" label="订单金额" width="100" show-overflow-tooltip />

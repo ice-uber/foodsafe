@@ -26,8 +26,8 @@ export const useUserStore = defineStore('user', {
         return Promise.reject(new Error(res.message))
       }
     },
-    async userInfo() {
-      const res = await reqUserInfo()
+    async userInfo(obj = '') {
+      const res = await reqUserInfo(obj)
       if (res.code === 200) {
         const { userName, avatar, role, companyName, distributionId, distributionCompanyName } = res.data
         this.username = userName
@@ -38,22 +38,19 @@ export const useUserStore = defineStore('user', {
         this.distributionCompanyName = distributionCompanyName
         return this.role;
       } else {
-        console.log(res)
         return Promise.reject(new Error(res.message))
       }
     },
     async logout() {
-      const res = await reqLogout()
-      if (res.code === 200) {
-        this.username = ''
-        this.avatar = ''
-        this.role = ''
-        this.token = ''
-        localStorage.removeItem('token')
-        return 'ok'
-      } else {
-        return Promise.reject(new Error(res.message))
-      }
+
+
+      this.username = ''
+      this.avatar = ''
+      this.role = ''
+      this.token = ''
+      localStorage.removeItem('token')
+      return 'ok'
+
     },
   },
   getters: {},

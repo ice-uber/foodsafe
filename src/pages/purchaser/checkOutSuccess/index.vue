@@ -15,7 +15,8 @@
         </div>
       </div>
       <div class="break">
-        <p>{{ time }}秒后将自动调换至首页</p>
+        <p style="display: flex;align-items: center;">
+        <div style="font-size: 30px;color:rgb(17, 151, 68)">{{ time }}</div>秒后将自动调换至首页</p>
       </div>
     </div>
 

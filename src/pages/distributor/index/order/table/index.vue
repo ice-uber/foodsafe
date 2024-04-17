@@ -18,13 +18,11 @@
                   <el-tag size="small" v-else type="warning">未填报</el-tag>
                 </template>
               </el-table-column>
-              <el-table-column label="检测结果" prop="">
+              <el-table-column label="检测结果">
                 <template #default="scope">
-
                   <el-tag size="small" type="danger">未检测</el-tag>
                 </template>
               </el-table-column>
-
             </el-table>
           </div>
         </template>
@@ -50,6 +48,17 @@
             type="success">已完成</el-tag>
         </template>
       </el-table-column>
+
+      <el-table-column label="操作" width="" show-overflow-tooltip>
+
+        <template #default="scope">
+          <el-button v-if="scope.row.status === '2'" size="small" type="success">提醒收货</el-button>
+          <el-button v-if="scope.row.status === '3'" size="small" type="success"
+            @click="handeFinish(scope.row.orderid)">完成订单</el-button>
+          <el-button v-if="scope.row.status === '4'" size="small" type="danger">删除订单</el-button>
+          <el-button v-if="scope.row.status === '5'" size="small" type="danger">删除订单</el-button>
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>
@@ -59,6 +68,8 @@ import { defineComponent, onBeforeMount, ref, reactive, watch } from "vue";
 import { reqOrderList } from '@/api/distributor/order/index.ts'
 import { ElMessage } from 'element-plus'
 import { useOrderStore } from '@/stores/modules/order.ts'
+import { reqPurchaserOrderList, reqOrderCount, reqUpdateOrder } from '@/api/purchaser/order/index.ts'
+import { reqFinishOrder } from '@/api/distributor/order/index.ts'
 
 // 订单条件存储库
 const orderStore = useOrderStore()
@@ -91,6 +102,15 @@ const initForm = () => {
   form.value.goodsid = ''
 }
 
+// 点击完成订单
+const handeFinish = async (id) => {
+  const res = await reqFinishOrder(id)
+  tips("订单完成成功！", "订单完成失败！", res.code)
+  if (res.code === 200) {
+    getOrder()
+  }
+}
+
 
 const onSelected = () => {
   const selecetedRow = tableRef.value.getSelectionRows()
@@ -107,7 +127,6 @@ const parm = ref({
 
 
 
-
 const paginationObj = ref({
   totalCount: 0,
 })
@@ -116,35 +135,11 @@ onBeforeMount(async () => {
   searchAll()
 })
 
-
-// 点击新增商品
-const addGoods = async () => {
-  initForm()
-  dialogFormVisible.value = true
-}
-
-// 点击批量下架
-const listDown = async () => {
-  const selectedRowArr = tableRef.value.getSelectionRows()
-
-  // 收集所有id
-  const ids = selectedRowArr.map(item => item.goodsid)
-
-  const res = await reqGoodsDownList(ids)
-  tips("批量下架成功", "批量下架失败", res.code)
-  getGoods(parm)
-}
-
-// 点击批量上架
-const listUp = async () => {
-  const selectedRowArr = tableRef.value.getSelectionRows()
-
-  // 收集所有id
-  const ids = selectedRowArr.map(item => item.goodsid)
-
-  const res = await reqGoodsUpList(ids)
-  tips("批量上架成功", "批量上架失败", res.code)
-  getGoods(parm)
+// 获取订单列表
+const getOrder = async () => {
+  const res = await reqOrderList(orderStore.params)
+  orderStore.orderArr = res.page.list
+  orderStore.params.totalCount = res.page.totalCount
 }
 
 // 点击修改时
@@ -159,8 +154,7 @@ const handleEdit = async (row) => {
   dialogFormVisible.value = true
 
 }
-// 点击删除时
-const handleDelete = (row) => { }
+
 // 点击上架时
 const handleUp = async (row) => {
   const res = await reqGoodsUp(row.goodsid)
@@ -196,59 +190,6 @@ const tips = (successMessage, errorMessage, code) => {
 }
 
 
-// 点击下架时
-const handleDown = async (row) => {
-  const res = await reqGoodsDown(row.goodsid)
-  if (res.code === 200) {
-    ElMessage({
-      type: 'success',
-      message: row.goodsname + '下架成功'
-    })
-    getGoods(parm)
-  } else {
-    ElMessage({
-      type: 'error',
-      message: row.goodsname + '下架失败'
-    })
-  }
-
-}
-
-// 修改或保存当前表单
-const saveOrUpdateProduct = async () => {
-  // 如果有id就是修改
-  if (form.value.goodsid) {
-    try {
-      const res = await reqGoodsUpdate(form.value)
-      tips("更新成功", "更新失败", res.code)
-
-    } catch (error) {
-      ElMessage({
-        type: 'error',
-        message: form.value.goodsid ? '更新失败' : '保存失败'
-      })
-    } finally {
-      initForm()
-      dialogFormVisible.value = false
-    }
-  } else {
-    try {
-      const res = await reqGoodsSave(form.value)
-      getGoods(parm)
-      tips(`新增商品【${form.value.goodsname}】成功`, `新增商品【${form.value.goodsname}】失败`, res.code)
-
-    } catch (error) {
-      ElMessage({
-        type: 'error',
-        message: form.value.goodsid ? '更新失败' : '保存失败'
-      })
-    } finally {
-      initForm()
-      dialogFormVisible.value = false
-    }
-  }
-}
-
 // 检索全部
 const searchAll = () => {
   parm.value.key = '';
@@ -257,7 +198,6 @@ const searchAll = () => {
   parm.value.status = '';
   parm.value.key = '';
 }
-
 
 
 
