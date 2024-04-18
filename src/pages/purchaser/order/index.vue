@@ -50,13 +50,15 @@
             </svg>
             <p style="font-size: 30px; color: rgb(17, 151, 68);margin-top: 20px;">没有订单列表</p>
 
-
           </div>
           <div class="order" v-for="(item, index) in orderArr" :key="item.orderid">
+
+
             <div class="header">
               <p class="title">
-              <div>
-                订单详情 #{{ index + 1 }}
+              <div style="display:flex;align-items: center;">
+                订单项 #{{ index + 1 }}
+                <p style="font-size: 20px;margin: 0 20px;color: black;">订单号：{{ item.orderno }}</p>
                 <el-tag style="font-size: 20px;height: 30px;" v-if="item.status === '0'" type="danger">未受理</el-tag>
                 <el-tag style="font-size: 20px;height: 30px;" v-if="item.status === '1'" type="success">待发货</el-tag>
                 <el-tag style="font-size: 20px;height: 30px;" v-if="item.status === '2'" type="success">待收货</el-tag>
@@ -89,60 +91,71 @@
               </p>
 
               <div>
-                <div class="detail">
-                  <div>
-                    <p>订单编号</p>
-                    <p>{{ item.orderno }}</p>
-                  </div>
-                  <div>
-                    <p>订单项数量</p>
-                    <p>{{ item.children.length }}</p>
-                  </div>
-                  <div>
-                    <p>定购时间</p>
-                    <p>{{ item.addtime }}</p>
-                  </div>
-                  <div>
-                    <p>交货日期</p>
-                    <p>{{ item.distributiondate }}</p>
-                  </div>
-                </div>
-                <div class="detail">
-                  <div>
-                    <p>订单地址</p>
-                    <p>{{ item.address }}</p>
-                  </div>
-                  <div>
-                    <p>订购人</p>
-                    <p>{{ item.addrName }}</p>
-                  </div>
-                  <div>
-                    <p>电话号码</p>
-                    <p>{{ item.addrPhone }}</p>
-                  </div>
-                  <div>
-                    <p>交货时间段</p>
-                    <p>{{ item.timerange }}</p>
-                  </div>
-                </div>
-                <div class="detail">
-                  <div>
-                    <p>小计</p>
-                    <p>￥{{ item.money }}</p>
-                  </div>
-                  <div>
-                    <p>运费</p>
-                    <p>￥0</p>
-                  </div>
-                  <div style="margin-top: 40px; font-size: 30px;color: rgb(17, 151, 68);font-weight: bolder;">
+                <el-collapse class="collapse" v-model="item.orderDetailCollpase"
+                  style="justify-content: flex-start;width: 100%;">
+                  <el-collapse-item title="订单详情" name="1" style="width: 100%;">
+                    <div class="detailCollpase">
+                      <div class="detail">
+                        <div>
+                          <p>订单编号</p>
+                          <p>{{ item.orderno }}</p>
+                        </div>
+                        <div>
+                          <p>订单项数量</p>
+                          <p>{{ item.children.length }}</p>
+                        </div>
+                        <div>
+                          <p>定购时间</p>
+                          <p>{{ item.addtime }}</p>
+                        </div>
+                        <div>
+                          <p>交货日期</p>
+                          <p>{{ item.distributiondate }}</p>
+                        </div>
+                      </div>
+                      <div class="detail">
+                        <div>
+                          <p>订单地址</p>
+                          <p>{{ item.address }}</p>
+                        </div>
+                        <div>
+                          <p>订购人</p>
+                          <p>{{ item.addrName }}</p>
+                        </div>
+                        <div>
+                          <p>电话号码</p>
+                          <p>{{ item.addrPhone }}</p>
+                        </div>
+                        <div>
+                          <p>交货时间段</p>
+                          <p>{{ item.timerange }}</p>
+                        </div>
+                      </div>
+                      <div class="detail">
+                        <div>
+                          <p>小计</p>
+                          <p>￥{{ item.money }}</p>
+                        </div>
+                        <div>
+                          <p>运费</p>
+                          <p>￥0</p>
+                        </div>
+                        <div style="margin-top: 40px; font-size: 30px;color: rgb(17, 151, 68);font-weight: bolder;">
 
-                    <p>合计</p>
-                    <p>￥{{ item.money }}</p>
-                  </div>
-                </div>
+                          <p>合计</p>
+                          <p>￥{{ item.money }}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                  </el-collapse-item>
+                </el-collapse>
               </div>
             </div>
-            <el-collapse class="collapse" v-model="activeNames" style="justify-content: flex-start;">
+
+
+
+            <el-collapse class="collapse" v-model="item.orderItemCollpase" style="justify-content: flex-start;">
               <el-collapse-item title="商品详情" name="1" style="width: 100%;">
                 <el-table :data="item.children" style="width: 100%" :stripe="true" class="table">
                   <el-table-column type="index" label="序号" width="180" align="center" />
@@ -228,7 +241,7 @@ const shoppingCartStore = useShoppingCartStore()
 
 const userStore = useUserStore()
 const setp = ref(5)
-
+const activeNames1 = ref("")
 const params = ref({
   page: 1,
   limit: 5,
@@ -359,10 +372,16 @@ const tips = (successMessage, errorMessage, code) => {
   transition: 0s;
 }
 
+.detailCollpase {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  flex-wrap: nowrap;
+}
 
 
 :deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
-  background-color: rgba(17, 151, 68) !important;
+  background-color: rgba(245, 245, 245) !important;
 }
 
 

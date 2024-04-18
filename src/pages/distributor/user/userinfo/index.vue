@@ -7,23 +7,23 @@
     <hr style="border: 1px solid rgb(234, 234, 234)">
     <div class="content">
       <div>
-        <el-tag style="font-size:30px;height:40px;" size="lager" type="danger">{{ orderStatus.unAccept }}</el-tag>
+        <el-tag style="font-size:30px;height:40px;" size="large" type="danger">{{ orderStatus.unAccept }}</el-tag>
         <p>待受理</p>
       </div>
       <div>
-        <el-tag style="font-size:30px;height:40px" size="lager" type="warning">{{ orderStatus.unSend }}</el-tag>
+        <el-tag style="font-size:30px;height:40px" size="large" type="warning">{{ orderStatus.unSend }}</el-tag>
         <p>待发货</p>
       </div>
       <div>
-        <el-tag style="font-size:30px;height:40px;" size="lager">{{ orderStatus.send }}</el-tag>
+        <el-tag style="font-size:30px;height:40px;" size="large">{{ orderStatus.send }}</el-tag>
         <p>已发货</p>
       </div>
       <div>
-        <el-tag style="font-size:30px;height:40px;" size="lager">{{ orderStatus.receive }}</el-tag>
+        <el-tag style="font-size:30px;height:40px;" size="large">{{ orderStatus.receive }}</el-tag>
         <p>已签收</p>
       </div>
       <div>
-        <el-tag style="font-size:30px;height:40px;" size="lager" type="success">{{ orderStatus.finish }}</el-tag>
+        <el-tag style="font-size:30px;height:40px;" size="large" type="success">{{ orderStatus.finish }}</el-tag>
         <p>已完成</p>
       </div>
     </div>

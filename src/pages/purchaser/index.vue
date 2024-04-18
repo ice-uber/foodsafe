@@ -1,6 +1,10 @@
 <template>
   <div class="container">
+    <div v-if="isLoad" class="loadContainer">
+      <div class="loader">
 
+      </div>
+    </div>
     <header class="header">
       <p>您好！{{ userStore.username }}欢迎使用学膳通</p>
       <div class="right">
@@ -10,29 +14,31 @@
     </header>
     <div class="search">
       <div class="top">
-        <div style="display: flex;align-items: center;">
-          <img src="@/assets/imgaes/favicon.png" alt="logo" style="width: 60px;">
-          <p style="font-size: 20px;color: rgb(17, 151, 68);font-weight: bolder;margin-left: 10px;">学膳通</p>
-        </div>
-        <p style="font-size: 16px;margin-left: 20px;" v-if="distributionList.length">当前配送商:
-          <el-tag type="success" style="font-size:16px" size="large">{{ userStore.distributionCompanyName }}</el-tag>
-        </p>
-        <el-dropdown style="margin-left: 10px;">
-          <span class="el-dropdown-link">
-            切换配送商
-            <el-icon class="el-icon--right">
-              <arrow-down />
-            </el-icon>
-          </span>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item @click="onDistributionChange(item.distributionid)" v-for="item in distributionList"
-                :key="item.distributionid">
-                {{ item.companyname }}</el-dropdown-item>
+        <div style="display:flex;align-items:center;width:520px">
+          <div style="display: flex;align-items: center;">
+            <img src="@/assets/imgaes/favicon.png" alt="logo" style="width: 60px;">
+            <p style="font-size: 20px;color: rgb(17, 151, 68);font-weight: bolder;margin-left: 10px;">学膳通</p>
+          </div>
+          <p style="font-size: 16px;margin-left: 20px;" v-if="distributionList.length">当前配送商:
+            <el-tag type="success" style="font-size:16px" size="large">{{ userStore.distributionCompanyName }}</el-tag>
+          </p>
+          <el-dropdown style="margin-left: 10px;">
+            <span class="el-dropdown-link">
+              切换配送商
+              <el-icon class="el-icon--right">
+                <arrow-down />
+              </el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="onDistributionChange(item.distributionid)" v-for="item in distributionList"
+                  :key="item.distributionid">
+                  {{ item.companyname }}</el-dropdown-item>
 
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
         <el-input placeholder="搜点什么..." class="searchInput"></el-input>
         <div class="userInfo">
           <el-avatar size="large" :src="userStore.avatar" />
@@ -69,7 +75,7 @@
       </div>
       <hr>
       <div class="bottom">
-        <el-menu router :default-active="`/purchaser/shopping`" class="menu" mode="horizontal" @select="handleSelect">
+        <el-menu router :default-active="`/purchaser/shopping`" class="menu" mode="horizontal">
           <div style="display: flex;">
             <el-menu-item index="/purchaser/shopping" style="  background-color: white;">首页</el-menu-item>
             <el-menu-item index="/purchaser/distribution">我的配送商</el-menu-item>
@@ -169,7 +175,7 @@
 
 <script lang="ts" setup>
 import { useRouter } from 'vue-router';
-import { onBeforeMount, ref, watch } from 'vue';
+import { onBeforeMount, ref, watch, onMounted, onUpdated, onBeforeUpdate } from 'vue';
 import { reqDistributionList } from '@/api/purchaser/index/index.ts'
 import { useUserStore } from '@/stores/modules/user.ts'
 import { useShoppingCartStore } from '@/stores/modules/shoppingCart.ts'
@@ -180,6 +186,14 @@ import pubsub from 'pubsub-js'
 const router = useRouter()
 const userStore = useUserStore()
 const shoppingCartStore = useShoppingCartStore()
+const isLoad = ref(false)
+onUpdated(() => {
+  setTimeout(() => {
+    isLoad.value = false
+  }, 250)
+})
+
+
 
 const visible = ref(false)
 
@@ -214,7 +228,7 @@ watch(shoppingCartStore.goodsList, () => {
 
 
 onBeforeMount(async () => {
-
+  isLoad.value = true
   await getGoodsList()
   await getDistributionList()
   await getShoppingCart()
@@ -312,6 +326,14 @@ const getGoodsList = async () => {
 </script>
 
 <style scoped>
+>>>.is-active {
+  color: rgb(17, 151, 68) !important;
+}
+
+>>>.el-menu-item:hover {
+  color: rgb(17, 151, 68) !important;
+}
+
 .footer {
   width: 100%;
   height: 100px;
@@ -382,16 +404,16 @@ const getGoodsList = async () => {
 }
 
 .userInfo {
-  margin-left: 120px;
+  margin-left: 0px;
   display: flex;
   align-items: center;
 }
 
 .searchInput {
-  width: 600px;
+  width: 40%;
   border-radius: 10px;
   height: 40px;
-  margin-left: 30px;
+  margin-left: 0px;
 }
 
 .search .top {
@@ -400,7 +422,7 @@ const getGoodsList = async () => {
   align-items: center;
   padding: 10px 20px;
   font-size: 14px;
-
+  justify-content: space-between;
 }
 
 .search .bottom {

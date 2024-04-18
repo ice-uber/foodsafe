@@ -1,6 +1,8 @@
 //进行axios二次封装:使用请求与响应拦截器
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import router from '@/router'
+
 //引入用户相关的仓库
 import { useUserStore } from '@/stores/modules/user'
 //第一步:利用axios对象的create方法,去创建axios实例(其他的配置:基础路径、超时的时间)
@@ -48,7 +50,7 @@ request.interceptors.response.use(
         message = 'TOKEN过期'
         break
       case 403:
-        message = '无权访问'
+        message = '登录过期！'; router.push('/login')
         break
       case 404:
         message = '请求地址错误'

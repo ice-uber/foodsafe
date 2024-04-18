@@ -183,7 +183,7 @@ const getGoodsList = async () => {
 
 <style scoped>
 :deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
-  background-color: rgba(17, 151, 68) !important;
+  background-color: rgba(245, 245, 245) !important;
 }
 
 

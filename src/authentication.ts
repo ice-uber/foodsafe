@@ -33,6 +33,7 @@ router.beforeEach(async (to, from, next) => {
         try {
           // 获取成功
           const role = await userStore.userInfo()
+
           if (to.path === '/' || '') {
             role === '1' ? next({ path: '/purchaser' }) : next({ path: '/distributor' })
           } else {

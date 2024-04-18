@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="header">
-      <p style="font-size: 34px;font-weight: bolder;">支付结果</p>
+      <p style="font-size: 34px;font-weight: bolder;">定购结果</p>
       <p style="font-size: 20px;">Checkout Result</p>
     </div>
     <div class="content">
@@ -10,7 +10,7 @@
           <SuccessFilled />
         </el-icon>
         <div style="margin-left: 20px;">
-          <p style="font-size: 50px;color: rgb(17, 151, 68);">支付成功</p>
+          <p style="font-size: 50px;color: rgb(17, 151, 68);">定购成功</p>
           <p style="font-size: 25px; margin-top: 20px;">订单号: {{ route.query.orderNo }}</p>
         </div>
       </div>

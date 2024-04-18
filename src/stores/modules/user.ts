@@ -38,12 +38,11 @@ export const useUserStore = defineStore('user', {
         this.distributionCompanyName = distributionCompanyName
         return this.role;
       } else {
+
         return Promise.reject(new Error(res.message))
       }
     },
     async logout() {
-
-
       this.username = ''
       this.avatar = ''
       this.role = ''

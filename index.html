@@ -19,8 +19,24 @@
 </head>
 
 <body>
+  <div class="loadContainer">
+    <div class="loader">
+    </div>
+  </div>
   <div id="app"></div>
+  <script>
+    //当代码加载到这里的时候,执行这个script,当代码加载到这里,说明loading该结束了
+    window.onload = function () {
+      var siteWelcome = document.querySelector('.loadContainer');
+      var loader = document.querySelector('.loader');
+      siteWelcome.classList.remove('loadContainer');
+      siteWelcome.classList.add('hidden');
+      loader.classList.remove('loader');
+      loader.classList.add('hidden');
+    }
+  </script>
   <script type="module" src="/src/main.js"></script>
+
 </body>
 
 </html>
