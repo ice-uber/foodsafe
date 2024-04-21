@@ -3,7 +3,8 @@
     <div style="background-color: white; display: flex;">
       <!-- <el-tree-select v-model="value" :data="data" :render-after-expand="false"
         style="width: 100px; margin-right: 20px;" /> -->
-      <el-tree-select v-model="parm.categoryId" :data="treeCategory" :render-after-expand="false" style="width: 240px" />
+      <el-tree-select v-model="parm.categoryId" :data="treeCategory" placeholder="请选择分类" :render-after-expand="false"
+        style="width: 240px" />
       <el-input v-model="parm.key" style="width: 240px" placeholder="检索商品名称" />
       <el-select v-model="parm.status" placeholder="状态" size="large" style="width: 100px; margin: 0 20px;">
         <el-option :value="1" label="上架中" />
@@ -62,8 +63,9 @@
           <el-tree-select v-model="form.classificationid" :data="treeCategory" :render-after-expand="false"
             style="width: 240px" />
         </el-form-item>
-        <el-form-item label="商品图片" required><el-upload class="avatar-uploader" action="/api/admin/common/upload"
-            :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+        <el-form-item label="商品图片" required><el-upload :headers="{ token: userStore.token }" class="avatar-uploader"
+            action="/api/admin/common/upload" :show-file-list="false" :on-success="handleAvatarSuccess"
+            :before-upload="beforeAvatarUpload">
             <el-image v-if="form.goodsimg" :src="form.goodsimg" fit="cover" style="  width: 178px;
   height: 178px;" />
             <div v-else style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
@@ -101,7 +103,10 @@ import { reqGoodsList, reqGoodsDetail, reqGoodsUpdate, reqGoodsDown, reqGoodsUp,
 import { reqCategoryTree } from '@/api/common/index.ts'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
+import { useUserStore } from "@/stores/modules/user.ts";
 
+
+const userStore = useUserStore()
 // 表格元对象
 let goosArr = ref([])
 
@@ -129,11 +134,10 @@ const initForm = () => {
   form.value.goodsid = ''
   form.value.goodsimg = ''
   form.value.classificationid = ''
+  form.value.classificationid = ''
 }
 
 const onSelected = () => {
-  console.log(111);
-
   const selecetedRow = tableRef.value.getSelectionRows()
   selecetedRow.length ? disabledButton.value = false : disabledButton.value = true
 }
@@ -229,6 +233,7 @@ const handleEdit = async (row) => {
   form.value.minamount = res.goods.minamount
   form.value.goodsid = res.goods.goodsid
   form.value.goodsimg = res.goods.goodsimg
+  form.value.classificationid = res.goods.classificationid
   dialogFormVisible.value = true
 
 }
@@ -329,7 +334,7 @@ const searchAll = () => {
   parm.value.page = 1;
   parm.value.limit = 5;
   parm.value.status = '';
-  parm.value.key = '';
+  parm.value.categoryId = '';
   getGoods(parm)
 }
 

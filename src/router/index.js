@@ -133,6 +133,30 @@ const router = createRouter({
       path: '/login',
       component: Login
     },
+    {
+      path: '/supervisor',
+      component: () => import('@/pages/supervisor/layout/index.vue'),
+      meta: {
+        title: '监管系统'
+      },
+      // redirect: '/supervisor/home',
+      children: [
+        {
+          path: 'home',
+          component: () => import('@/pages/supervisor/home/index.vue'),
+          meta: {
+            title: '欢迎'
+          },
+        },
+        {
+          path: 'foodSource',
+          component: () => import('@/pages/supervisor/foodSource/index.vue'),
+          meta: {
+            title: '食材溯源'
+          },
+        }
+      ]
+    },
   ]
 })
 export default router

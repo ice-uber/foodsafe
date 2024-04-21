@@ -204,8 +204,8 @@
           </el-form>
         </el-col>
         <el-col :span="8" style="display: flex; justify-content: center;">
-          <el-upload class="avatar-uploader" action="/api/admin/common/upload" :show-file-list="false"
-            :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
+          <el-upload class="avatar-uploader" action="/api/admin/common/upload" :headers="{ token: userStore.token }"
+            :show-file-list="false" :on-success="handleAvatarSuccess" :before-upload="beforeAvatarUpload">
             <el-image v-if="imageUrl" :src="imageUrl" fit="cover" style="  width: 178px;
   height: 178px;" />
             <div v-else style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
@@ -239,7 +239,10 @@ import { useOrderStore } from '@/stores/modules/order.ts'
 import { get } from "http";
 import { Plus } from '@element-plus/icons-vue'
 import { tr } from "element-plus/es/locale";
+import { useUserStore } from "@/stores/modules/user.ts";
 
+
+const userStore = useUserStore()
 
 defineComponent({
   OrderTable,
@@ -326,7 +329,7 @@ const beforeAvatarUpload = () => { }
 const handleAvatarSuccess = (res) => {
   imageUrl.value = res.data
   sourceForm.value.pzurl = res.data
-  tips("凭证上传成功！", "凭证上传失败", 200)
+  tips("凭证上传成功！", "凭证上传失败", res.code)
 }
 
 // 点击批量订单出库

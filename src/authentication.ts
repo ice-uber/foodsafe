@@ -16,7 +16,13 @@ router.beforeEach(async (to, from, next) => {
   if (token) {
     // 如果token存在则代表已登录 此时禁止访问login页
     if (to.path === '/login') {
-      role === '1' ? next({ path: '/purchaser' }) : next({ path: '/distributor' })
+      if (role === '1') {
+        next({ path: '/purchaser' })
+      } else if (role === '2') {
+        next({ path: '/distributor' })
+      } else {
+        next({ path: '/supervisor' })
+      }
     } else {
       // 没有用户信息首先获取用户信息
       //    用户信息获取失败包括 1.客户端token被修改 2.token过期
@@ -24,7 +30,13 @@ router.beforeEach(async (to, from, next) => {
       if (username) {
         // 如果有检查是不是访问首页 / 如果是根据角色重定向至对应界面
         if (to.path === '/' || '') {
-          role === '1' ? next({ path: '/purchaser' }) : next({ path: '/distributor' })
+          if (role === '1') {
+            next({ path: '/purchaser' })
+          } else if (role === '2') {
+            next({ path: '/distributor' })
+          } else {
+            next({ path: '/supervisor' })
+          }
         } else {
           next()
         }
@@ -35,7 +47,13 @@ router.beforeEach(async (to, from, next) => {
           const role = await userStore.userInfo()
 
           if (to.path === '/' || '') {
-            role === '1' ? next({ path: '/purchaser' }) : next({ path: '/distributor' })
+            if (role === '1') {
+              next({ path: '/purchaser' })
+            } else if (role === '2') {
+              next({ path: '/distributor' })
+            } else {
+              next({ path: '/supervisor' })
+            }
           } else {
             next()
           }

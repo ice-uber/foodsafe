@@ -5,7 +5,7 @@
       <el-menu :router="true" default-active="0" class="el-menu-demo menu" mode="horizontal">
         <el-menu-item index="/distributor/index">首页</el-menu-item>
         <el-menu-item index="/distributor/product">商品维护</el-menu-item>
-        <el-menu-item index="/distributor/account">账号管理</el-menu-item>
+        <!-- <el-menu-item index="/distributor/account">账号管理</el-menu-item> -->
         <el-menu-item index="/distributor/customer">我的客户</el-menu-item>
         <el-menu-item index="/distributor/order">订单处理</el-menu-item>
         <el-menu-item index="/distributor/supplier">供货商管理</el-menu-item>

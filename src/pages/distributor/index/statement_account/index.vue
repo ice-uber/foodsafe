@@ -13,8 +13,10 @@
       </div>
     </div>
     <div class="title">
-      <p style="margin:0">共查到<el-tag style="font-size:20px" type="success" size="large">{{ titleMessage.totalNumber
-      }}</el-tag>条记录 总金额：<el-tag style="font-size:20px" type="danger" size="large">{{ titleMessage.totalMoney
+      <p style="margin:0">共查到<el-tag style="font-size:20px" type="success" size="large">{{ titleMessage.totalNumber ?
+        titleMessage.totalNumber : 0
+      }}</el-tag>条记录 总金额：<el-tag style="font-size:20px" type="danger" size="large"> {{ titleMessage.totalMoney ?
+  titleMessage.totalMoney : 0
 }}</el-tag>元</p>
       <el-button style="margin: 0 10px;" type="success">导出</el-button>
 

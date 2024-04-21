@@ -14,7 +14,7 @@
             <el-input class="input" :prefix-icon="User" v-model.trim="loginForm.userName" placeholder="请输入账号"></el-input>
           </el-form-item>
           <el-form-item prop="userPassword">
-            <el-input class="input" type="userPassword" :prefix-icon="Lock" show-userPassword
+            <el-input class="input" type="password" :prefix-icon="Lock" show-userPassword
               v-model.trim="loginForm.userPassword" placeholder="请输入密码"></el-input>
           </el-form-item>
           <el-form-item class="login-btn">

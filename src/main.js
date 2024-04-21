@@ -5,7 +5,7 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import App from './App.vue'
 import 'virtual:svg-icons-register' // svg 注入脚本
-
+import '@/styles/index.scss'
 import pinia from '@/stores'
 import 'animate.css' // 引入第三方动画库
 

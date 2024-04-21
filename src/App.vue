@@ -10,11 +10,19 @@
 <script setup>
 import { onBeforeMount, onMounted, ref } from 'vue';
 import pubsub from 'pubsub-js'
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
+
 
 
 const isLoad = ref(false)
 onBeforeMount(() => {
   isLoad.value = true
+})
+
+onMounted(() => {
+  // router.push('/supervisor')
 })
 
 const load = () => {

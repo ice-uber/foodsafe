@@ -80,7 +80,7 @@
             <el-menu-item index="/purchaser/shopping" style="  background-color: white;">首页</el-menu-item>
             <el-menu-item index="/purchaser/distribution">我的配送商</el-menu-item>
             <el-menu-item index="/purchaser/order">订单管理</el-menu-item>
-            <el-menu-item index="">食品溯源</el-menu-item>
+            <!-- <el-menu-item index="">食品溯源</el-menu-item>  -->
           </div>
           <div class="devMessage">
             <div>

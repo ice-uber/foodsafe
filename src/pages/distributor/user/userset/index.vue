@@ -32,7 +32,8 @@
             <el-col :span="12">
               <el-form-item label="营业证件">
                 <el-upload class="avatar-uploader" action="/api/admin/common/upload" :show-file-list="false"
-                  :on-success="handlebusinessCardImgSuccess" :before-upload="beforeAvatarUpload">
+                  :on-success="handlebusinessCardImgSuccess" :before-upload="beforeAvatarUpload"
+                  :headers="{ token: userStore.token }">
                   <el-image v-if="userForm.businessCardImg" :src="userForm.businessCardImg" fit="cover" style="  width: 178px;
   height: 178px;" />
                   <div v-else
@@ -49,7 +50,8 @@
 
               <el-form-item label="法人身份证">
                 <el-upload class="avatar-uploader" action="/api/admin/common/upload" :show-file-list="false"
-                  :on-success="handleidentificationCardImgSuccess" :before-upload="beforeAvatarUpload">
+                  :headers="{ token: userStore.token }" :on-success="handleidentificationCardImgSuccess"
+                  :before-upload="beforeAvatarUpload">
                   <el-image v-if="userForm.identificationCardImg" :src="userForm.identificationCardImg" fit="cover" style="  width: 178px;
   height: 178px;" />
                   <div v-else
@@ -90,14 +92,17 @@
       </el-tab-pane> -->
     </el-tabs>
   </div>
-</template>
+</template> 
 
 <script lang="ts" setup>
 import { defineComponent, ref, onBeforeMount } from "vue";
 import { reqUserInfoDetail, reqSaveCompanyMessage, reqUpdateUserInfo } from '@/api/distributor/user/userSet/index.ts'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
+import { useUserStore } from "@/stores/modules/user.ts";
 
+
+const userStore = useUserStore()
 const activeName = ref('1')
 
 const userForm = ref({
